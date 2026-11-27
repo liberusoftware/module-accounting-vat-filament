@@ -15,14 +15,17 @@ use Liberu\Accounting\VatFilament\VatFilamentServiceProvider;
 
 it('registers and configures accounting-vat-filament filament resources', function (): void {
     $provider = $this->app->register(VatFilamentServiceProvider::class, force: true);
-    if (method_exists($provider, 'boot')) { $provider->boot(); }
+    if (method_exists($provider, 'boot')) {
+        $provider->boot();
+    }
     expect($provider)->toBeInstanceOf(VatFilamentServiceProvider::class);
+    expect($this->app->make(VatFilamentPlugin::class))->toBeInstanceOf(VatFilamentPlugin::class);
     $plugin = VatFilamentPlugin::make();
     $panel = Panel::make()->id('test-accounting-vat-filament');
     $plugin->register($panel);
     $plugin->boot($panel);
     expect($plugin->getId())->toBeString()->not->toBeEmpty();
-    $host = new ListVatRecords;
+    $host = new ListVatRecords();
     expect(VatRecordResource::getPages())->toBeArray();
     expect(VatRecordResource::getEloquentQuery())->toBeInstanceOf(Builder::class);
     expect(VatRecordResource::form(Schema::make($host)))->toBeInstanceOf(Schema::class);
@@ -31,4 +34,5 @@ it('registers and configures accounting-vat-filament filament resources', functi
     expect(VatReturnResource::getEloquentQuery())->toBeInstanceOf(Builder::class);
     expect(VatReturnResource::form(Schema::make($host)))->toBeInstanceOf(Schema::class);
     expect(VatReturnResource::table(Table::make($host)))->toBeInstanceOf(Table::class);
+    expect(new ListVatReturns())->toBeInstanceOf(ListVatReturns::class);
 });
